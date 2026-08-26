@@ -256,8 +256,8 @@
         <thead>
           <tr class="grp-row">
             <th class="label-head" rowspan="2">GĐKV / Salon</th>
-            <th class="grp-green" colspan="3">Mời đặt lịch</th>
-            <th class="grp-blue" colspan="3">Hủy lịch</th>
+            <th class="grp-green" colspan="3">Menu gọi khách đã booking</th>
+            <th class="grp-blue" colspan="3">Menu gọi khách huỷ lịch/ k đến</th>
           </tr>
           <tr class="sub-row" id="subHeadRow"></tr>
         </thead>
@@ -268,7 +268,7 @@
   </div>
 
   <footer>
-    Nguồn: <span class="mono">main.view_call</span> (type 2 = mời đặt lịch, type 9 = hủy lịch) join <span class="mono">main.booking_status</span>. GĐKV lấy theo <span class="mono">core_hr.department</span> (type='region', mã KV1–KV8) ghép qua <span class="mono">salon_id</span> — cơ cấu Giám đốc khu vực thực tế. Salon nhượng quyền không được tính. "Chưa gọi" = <span class="mono">sub_status</span> chưa có trong <span class="mono">booking_status</span>. Dữ liệu có sẵn từ <span id="dataRangeFoot">…</span>.
+    Nguồn: <span class="mono">main.view_call</span> (type 2 = mời đặt lịch, type 9 = hủy lịch) join <span class="mono">main.booking_status</span>. GĐKV lấy theo <span class="mono">core_hr.department</span> (type='region', mã KV1–KV8) ghép qua <span class="mono">salon_id</span> — cơ cấu Giám đốc khu vực thực tế. Salon nhượng quyền không được tính. "Đã gọi" = <span class="mono">sub_status</span> đã có giá trị hợp lệ trong <span class="mono">booking_status</span> (khác trạng thái "Chưa gọi/chưa cập nhật"). Dữ liệu có sẵn từ <span id="dataRangeFoot">…</span>.
   </footer>
 </div>
 
@@ -284,9 +284,9 @@ function fmtPct(v){
 }
 function pctTier(v, total){
   if (!total) return 'zero';
-  if (v >= 80) return 'critical';
+  if (v >= 80) return 'good';
   if (v >= 50) return 'warn';
-  return 'good';
+  return 'critical';
 }
 function normalize(s){
   return (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d');
@@ -311,12 +311,12 @@ var state = {
 };
 
 var COLS = [
-  {key:'moi_total', label:'SL', grp:'green'},
-  {key:'moi_chua', label:'Chưa gọi', grp:'green'},
-  {key:'moi_pct', label:'% chưa gọi', grp:'green', type:'pct'},
-  {key:'huy_total', label:'SL', grp:'blue'},
-  {key:'huy_chua', label:'Chưa gọi', grp:'blue'},
-  {key:'huy_pct', label:'% chưa gọi', grp:'blue', type:'pct'}
+  {key:'moi_total', label:'Tổng data', grp:'green'},
+  {key:'moi_chua', label:'SL đã gọi', grp:'green'},
+  {key:'moi_pct', label:'Tỉ lệ đã gọi', grp:'green', type:'pct'},
+  {key:'huy_total', label:'Tổng data', grp:'blue'},
+  {key:'huy_chua', label:'SL đã gọi', grp:'blue'},
+  {key:'huy_pct', label:'Tỉ lệ đã gọi', grp:'blue', type:'pct'}
 ];
 
 function aggregateSalons(fromStr, toStr){
@@ -339,10 +339,10 @@ function aggregateSalons(fromStr, toStr){
       gdkv_code: meta.gdkv_code,
       gdkv_name: meta.gdkv_name,
       gdkv_staff: meta.gdkv_staff,
-      moi_total: d.moi.total, moi_chua: d.moi.chua_goi,
-      moi_pct: d.moi.total ? d.moi.chua_goi / d.moi.total * 100 : null,
-      huy_total: d.huy.total, huy_chua: d.huy.chua_goi,
-      huy_pct: d.huy.total ? d.huy.chua_goi / d.huy.total * 100 : null
+      moi_total: d.moi.total, moi_chua: (d.moi.total - d.moi.chua_goi),
+      moi_pct: d.moi.total ? (d.moi.total - d.moi.chua_goi) / d.moi.total * 100 : null,
+      huy_total: d.huy.total, huy_chua: (d.huy.total - d.huy.chua_goi),
+      huy_pct: d.huy.total ? (d.huy.total - d.huy.chua_goi) / d.huy.total * 100 : null
     };
   });
 }
