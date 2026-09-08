@@ -275,7 +275,7 @@
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="tab1">Tổng quan theo GĐKV</button>
+    <button class="tab-btn active" data-tab="tab1">Tỉ lệ gọi của 2 menu</button>
     <button class="tab-btn" data-tab="tab2">Chi tiết từng cuộc gọi</button>
   </div>
 
@@ -909,7 +909,7 @@ document.getElementById('d2HeadRow').addEventListener('keydown', function(e){
 document.getElementById('detailAvailNote').innerHTML =
   'Dữ liệu chi tiết từng cuộc gọi chỉ còn lưu trong hệ thống nguồn (<span class="mono">view_call</span>) đến gần đây — hiện có từ <b>'
   + DETAIL_MIN.split('-').reverse().join('/') + '</b> đến <b>' + DETAIL_MAX.split('-').reverse().join('/')
-  + '</b> (bảng tổng quan ở tab "Tổng quan theo GĐKV" có lịch sử dài hơn vì được lưu tích lũy riêng mỗi ngày).';
+  + '</b> (bảng tổng quan ở tab "Tỉ lệ gọi của 2 menu" có lịch sử dài hơn vì được lưu tích lũy riêng mỗi ngày).';
 
 populateD2Filters();
 renderD2();
