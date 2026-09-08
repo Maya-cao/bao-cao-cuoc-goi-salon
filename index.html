@@ -393,6 +393,30 @@ const STATUS_NAMES = {
   21:"Không nghe máy - Lần 2",22:"Không nghe máy - Lần 3",23:"Sai số/không tồn tại",
   24:"Đã book được lịch",25:"Cần chăm sóc thêm"
 };
+const STAFF_NAMES = {
+"817":"Lê Châu Tuấn","913":"Lê Thị Kim Tuyết","1034":"Nguyễn Thị Vân SMSUP","1395":"Bùi Việt Hưng",
+"1597":"Nguyễn Thị Thu Huyền SMSUP","1870":"Phạm Văn Tân","2324":"Nguyễn Thị Ánh Vi","2449":"Nguyễn Xuân Phúc",
+"2488":"Kim Thị Mỹ Trinh","2650":"Nguyễn Văn Tú","3194":"Nguyễn Thuỳ Dương (1)","3304":"Nguyễn Văn Nam SMSUP",
+"3850":"Trương Phúc Tỷ","3903":"Huỳnh Ái Nhi","3965":"Đồng Thị Thanh Tuyền","4305":"Nguyễn Thị Huệ GDKV",
+"4388":"Ngô Doãn Hưng","5117":"Nguyễn Kim Mùa SMSUP","5368":"Mai Ngọc Thắng","5866":"Đỗ Thị Linh",
+"5921":"Nguyễn Viết Văn","5948":"Tô Huyền Trang","6804":"Lương Anh Khánh","6959":"Vũ Văn Tuyên",
+"7304":"Từ Thị Mỹ Ánh","7422":"Nguyễn Hữu Minh","7460":"Đồng Minh Quang","9708":"Nguyễn Diệu Hiền",
+"9809":"Nguyễn Chí Khanh","9963":"Nguyễn Huy Bảo",
+"10023":"Nguyễn Thế Nghĩa","10119":"Quách Tuyết Trang","10369":"Khổng Văn Duy","10390":"Võ Trung Hậu SMSUP",
+"10538":"Lê Hoàng Tín","10575":"Nguyễn Hải Long","11102":"Hà Linh Phượng","11960":"Lê Thị Huỳnh Mơ",
+"12164":"Lê Nguyễn Phương Trinh","12374":"Nguyễn Hoàng Duy","12995":"Võ Đức","13481":"Hùynh Phúc Nguyên",
+"13946":"Nguyễn Thị Thuỳ Dung","13978":"Mai Thị Giang","14114":"Vũ Văn Quang","14164":"Trần Thị Mỹ Lan",
+"14330":"Phạm Thị Thương","14743":"Thái Thị Như Mai","15252":"Nguyễn Hoàng Dương","15253":"Hoàng Minh Đức",
+"15254":"Dương Đức Huy","16102":"Trần Ngọc Hiếu","16360":"Nguyễn Đình Sanh SMST","16363":"Phan Văn Đô SMST",
+"16396":"Trần Thông Tính SMST","16988":"Nguyễn Văn Toàn","17607":"Vũ Thị Ngọc Linh","17662":"Võ Thị Hồng",
+"17772":"Phạm Văn Nhiều SMST","17787":"Nguyễn Thị Nga","18312":"Trần Thị Kim Loan","18541":"Trần Quang Linh",
+"18649":"Trương Phi Hà","18814":"Cảnh Thị Thuỷ","18936":"Nông Minh Hạnh","19171":"Trần Thị Chúc Linh",
+"19220":"Lê thị yến","19272":"Nguyễn Thị Vân Anh","19633":"Nguyễn Thị Ngọc Hân","19752":"Nguyễn Thanh Huy",
+"19764":"Trương Huỳnh Trung Nghĩa","20044":"Trương Thanh Sơn SMST","20102":"Đinh Thị Thuý Hiền","20484":"Nguyễn Thành Đạt SMSUP",
+"20788":"Lê Thị Thu Trang","20794":"Trịnh Lý Bình","20818":"Nguyễn Khánh Duy","21034":"Lê Phan Hoàng Phúc",
+"21265":"Vũ Thị Hạnh","21405":"HỒ THỊ DUNG","21430":"Nguyễn Thị Ngọc Linh","21443":"Trần Minh Tiến SMST",
+"21458":"Trần Thị Thanh Loan SMSUP"
+};
 
 function fmtNum(n){ return Number(n).toLocaleString('vi-VN'); }
 function fmtPct(v){
@@ -697,6 +721,7 @@ var D2_COLS = [
   {key:'type', label:'Menu'},
   {key:'receiver_id', label:'ID khách'},
   {key:'sender_id', label:'ID nhân viên'},
+  {key:'sender_name', label:'Tên nhân viên'},
   {key:'status_label', label:'Trạng thái gọi'}
 ];
 
@@ -706,9 +731,11 @@ function toRowObj(r){
   var statusLabel = (statusId === null || statusId === undefined)
     ? 'Chưa gọi/chưa cập nhật'
     : (STATUS_NAMES[statusId] || ('Mã trạng thái ' + statusId));
+  var senderName = (r[4] === null || r[4] === undefined) ? null : (STAFF_NAMES[r[4]] || null);
   return {
     t: r[0], salon_id: r[1], type: r[2], receiver_id: r[3], sender_id: r[4], status_id: statusId,
-    gdkv_name: meta.gdkv_staff || meta.gdkv_name || '—', salon_name: meta.name, status_label: statusLabel
+    gdkv_name: meta.gdkv_staff || meta.gdkv_name || '—', salon_name: meta.name, status_label: statusLabel,
+    sender_name: senderName ? senderName.trim() : (r[4] != null ? 'Không rõ' : '—')
   };
 }
 
@@ -772,7 +799,7 @@ function renderD2(){
 
   var body = document.getElementById('d2BodyRows');
   if (!shown.length){
-    body.innerHTML = '<tr class="empty-row"><td colspan="7">Không có cuộc gọi nào khớp bộ lọc.</td></tr>';
+    body.innerHTML = '<tr class="empty-row"><td colspan="8">Không có cuộc gọi nào khớp bộ lọc.</td></tr>';
   } else {
     body.innerHTML = shown.map(function(r){
       var menuCls = r.type === 2 ? 'moi' : 'huy';
@@ -785,6 +812,7 @@ function renderD2(){
         + '<td><span class="badge-menu ' + menuCls + '">' + menuLabel + '</span></td>'
         + '<td class="num">' + fmtNum(r.receiver_id) + '</td>'
         + '<td class="num">' + (r.sender_id != null ? fmtNum(r.sender_id) : '—') + '</td>'
+        + '<td class="col-name">' + escapeHtml(r.sender_name) + '</td>'
         + '<td><span class="status-tag' + statusCls + '">' + escapeHtml(r.status_label) + '</span></td>'
         + '</tr>';
     }).join('');
