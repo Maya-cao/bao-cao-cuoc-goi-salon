@@ -708,7 +708,7 @@ function toRowObj(r){
     : (STATUS_NAMES[statusId] || ('Mã trạng thái ' + statusId));
   return {
     t: r[0], salon_id: r[1], type: r[2], receiver_id: r[3], sender_id: r[4], status_id: statusId,
-    gdkv_name: meta.gdkv_name || '—', salon_name: meta.name, status_label: statusLabel
+    gdkv_name: meta.gdkv_staff || meta.gdkv_name || '—', salon_name: meta.name, status_label: statusLabel
   };
 }
 
